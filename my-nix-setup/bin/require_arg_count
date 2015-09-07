@@ -1,0 +1,94 @@
+#! /bin/bash
+#
+# Description:
+#    Verifies that a given number of arguments have been presented. Used as a helper in other functions.
+#
+# Usage:
+#    require_arg_count <operation> <value> [<arg0> <arg1> ... <argN>]
+#
+# Operations:
+#     lt, gt, eq, le, ge
+#
+
+function args_as_string() {
+   local result=""
+   local i=0
+   for arg in "$@" ; do
+     result="$result\n\targv[$i]: $arg"
+     let i=$i+1
+   done
+   echo "$result"
+}
+
+function require_arg_count_equal_to() {
+  local value="$1"
+  shift
+  if [ $# -ne "$value" ] ; then
+    local args=$(args_as_string "$@")
+    if [ $# -gt "$value" ] ; then
+        log fatal "Too many arguments: exactly $value allowed, but $# found. Arguments:$args"
+    else
+        log fatal "Too few arguments: exactly $value required, but $# found. Arguments:$args"
+    fi
+    exit 1
+  fi
+}
+
+function require_arg_count_less_than() {
+  local value="$1"
+  shift
+  if [ $# -ge "$value" ] ; then
+    local args=$(args_as_string "$@")
+    log fatal "Too many arguments: $value allowed, but $# found. Arguments:$args"
+    exit 1
+  fi
+}
+
+function require_arg_count_greater_than() {
+  local value="$1"
+  shift
+  if [ $# -le "$value" ] ; then
+    local args=$(args_as_string "$@")
+    log fatal "Too few arguments: $value required, but $# found. Arguments:$args"
+    exit 1
+  fi
+}
+
+function require_arg_count_less_than_or_equal_to() {
+  local value="$1"
+  shift
+  if [ $# -gt "$value" ] ; then
+    local args=$(args_as_string "$@")
+    log fatal "Too many arguments: $value allowed, but $# found. Arguments:$args"
+    exit 1
+  fi
+}
+
+function require_arg_count_greater_than_or_equal_to() {
+  local value="$1"
+  shift
+  if [ $# -lt "$value" ] ; then
+    local args=$(args_as_string "$@")
+    log fatal "Too few arguments: $value required, but $# found. Arguments:$args"
+    exit 1
+  fi
+}
+
+function require_arg_count() {
+  if [ $# -eq 0 ] ; then
+    log fatal "Must specify an expected number of arguments."
+    exit 1
+   fi
+
+  local op="$1"
+  case "$op" in
+    eq|"=="|"=") shift; require_arg_count_equal_to "$@" ;;
+    lt|"<") shift; require_arg_count_less_than "$@" ;;
+    gt|">") shift; require_arg_count_greater_than "$@" ;;
+    le|"<=") shift; require_arg_count_less_than_or_equal_to "$@" ;;
+    ge|">=") shift; require_arg_count_greater_than_or_equal_to "$@" ;;
+    *) require_arg_count_equal_to "$@" ;;
+  esac
+}
+
+require_arg_count "$@"

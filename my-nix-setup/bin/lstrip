@@ -1,0 +1,13 @@
+#! /usr/bin/env python3
+#
+# Removes leading whitespace from a string
+
+import sys
+
+def main():
+  for arg in sys.argv[1:]:
+    print(arg.lstrip())
+
+if __name__=='__main__':
+    main()
+

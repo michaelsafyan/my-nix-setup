@@ -1,0 +1,17 @@
+#! /usr/bin/env python3
+#
+# A utility for iterating over a range in the BASH shell using a syntax
+# that is identical to the range() method that is available in Python.
+import sys
+
+def main():
+  args = sys.argv[1:]
+  if 0 < len(args) <= 3:
+    for entry in range(*map(int, args)):
+      print(entry)
+  else:
+    print('Usage: range [<start>] <stop> [<step>]', file=sys.stderr)
+    sys.exit(1)
+
+if __name__=='__main__':
+  main()

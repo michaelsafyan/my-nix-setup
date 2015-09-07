@@ -1,0 +1,24 @@
+#! /bin/bash
+#
+# Description:
+#    Invokes cat on the supplied command name if it exists; otherwise, does nothing.
+#
+# Usage:
+#    catwhich <command>
+#
+
+function catwhich() {
+   local command="$1"
+   local command_location=$(which "$command")
+   if [ -x "$command_location" ] ; then
+     cat "$command_location"
+   else
+     log error "No such command: $command" >&2
+   fi
+}
+
+if [ $# -eq 1 ] ; then
+  catwhich "$1"
+else
+  log fatal "Wrong number of arguments: 1 required."
+fi

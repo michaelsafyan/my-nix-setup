@@ -1,0 +1,26 @@
+#! /bin/bash
+#
+# Description:
+#    Invokes emacs with the supplied files.
+#
+# Usage:
+#    emacsopen [<arg0> .. <argN>]
+#
+
+function emacsopen() {
+  if [ -d "/Applications/Aquamacs.app" ] ; then
+    if [ $# -eq 0 ] ; then
+      open -a Aquamacs
+    else
+      open -a Aquamacs "$@"
+    fi
+  else
+    if [ $# -eq 0 ] ; then
+      emacsclient --alternate-editor="emacs" >/dev/null 2>&1 &
+    else
+      emacsclient --alternate-editor="emacs" "$@" >/dev/null 2>&1 &
+    fi
+  fi
+}
+
+emacsopen "$@"

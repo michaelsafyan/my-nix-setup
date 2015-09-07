@@ -1,0 +1,55 @@
+#! /usr/bin/env python3
+#
+# Simple utility to generate random passwords (for low-importance passwords,
+# such as the commenting system on that random website that you practically
+# never log into, where you just don't want to think up a new password).
+
+import argparse
+import random
+
+class CharSet(object):
+
+  def __init__(self, lower_case_enabled=True, upper_case_enabled=True, digits_enabled=True, symbols_enabled=True):
+    charset = ''
+    if lower_case_enabled:
+      charset += 'abcdefghijklmnopqrstuvwxyz'
+    if upper_case_enabled:
+      charset += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+    if digits_enabled:
+      charset += '0123456789'
+    if symbols_enabled:
+      charset += '!@#$%^&*(),-_+:;.'
+    self.charset = charset
+  
+  def RandomChar(self):
+    return random.choice(self.charset)
+  
+  def RandomString(self, number_of_elements):
+    result = ''
+    for i in range(number_of_elements):
+      result += self.RandomChar()
+    return result
+
+def ConvertStringToBool(x):
+  x = x.lower()
+  if x in (('yes', 'true', 'on')):
+    return True
+  if x in (('no', 'false', 'off')):
+    return False
+  raise ValueError('Boolean expected.')
+
+def Main():
+  parser = argparse.ArgumentParser()
+  parser.add_argument('--minsize', default=8, type=int)
+  parser.add_argument('--maxsize', default=20, type=int)
+  parser.add_argument('--lowercase', default='yes', type=ConvertStringToBool)
+  parser.add_argument('--uppercase', default='yes', type=ConvertStringToBool)
+  parser.add_argument('--digits', default='yes', type=ConvertStringToBool)
+  parser.add_argument('--symbols', default='yes', type=ConvertStringToBool)
+  args = parser.parse_args()
+  charset = CharSet(lower_case_enabled=args.lowercase, upper_case_enabled=args.uppercase, digits_enabled=args.digits, symbols_enabled=args.symbols)
+  password_length = random.randint(args.minsize, args.maxsize)
+  print(charset.RandomString(password_length))
+                    
+if __name__=='__main__':
+    Main()

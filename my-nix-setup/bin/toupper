@@ -1,0 +1,14 @@
+#! /bin/bash
+# Converts a piece of text to upper case
+
+function tolower() {
+  local input="$1"
+  local output=$(echo "$1" | tr '[:lower:]' '[:upper:]')
+  echo "$output"
+}
+
+if [ $# -ne 1 ] ; then
+  log fatal "Invalid number of arguments: exactly 1 required."
+else
+  tolower "$1"
+fi

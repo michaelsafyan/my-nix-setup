@@ -1,0 +1,115 @@
+#! /bin/bash
+#
+# Description:
+#    Emits a (possibly colored) log to stderr.
+#
+# Usage:
+#    log <level> <message>
+#
+# Levels:
+#    trace
+#    debug
+#    info
+#    warn
+#    error
+#    fatal
+
+XTERM_BLACK='0;30'
+XTERM_BLUE='0;34'
+XTERM_GREEN='0;32'
+XTERM_CYAN='0;36'
+XTERM_RED='0;31'
+XTERM_PURPLE='0;35'
+XTERM_BROWN='0;33'
+XTERM_LIGHT_BLACK='0;30'
+XTERM_LIGHT_BLUE='0;34'
+XTERM_LIGHT_GREEN='0;32'
+XTERM_LIGHT_CYAN='0;36'
+XTERM_LIGHT_RED='0;31'
+XTERM_LIGHT_PURPLE='0;35'
+XTERM_LIGHT_BROWN='0;33'
+XTERM_DARK_BLACK='1;30'
+XTERM_DARK_BLUE='1;34'
+XTERM_DARK_GREEN='1;32'
+XTERM_DARK_CYAN='1;36'
+XTERM_DARK_RED='1;31'
+XTERM_DARK_PURPLE='1;35'
+XTERM_DARK_BROWN='1;33'
+
+function log() {
+  local original_level="$1"
+  local level=$(toupper "$1")
+  shift
+  local message=""
+  if [ $# -gt 0 ] ; then
+    message="$1"
+    shift
+  fi
+  while [ $# -gt 0 ] ; do
+    if [[ "$message" != "" ]] ; then
+      message="$message $1"
+    else
+      message="$1"
+    fi
+    shift
+  done
+  local color=""
+  case "$level" in
+    TRACE) color=$XTERM_LIGHT_BLUE ;;
+    DEBUG) color=$XTERM_DARK_PURPLE ;;
+    INFO) color=$XTERM_DARK_BLUE ;;
+    WARN) color=$XTERM_DARK_BROWN ;;
+    ERROR) color=$XTERM_DARK_RED ;;
+    FATAL) color=$XTERM_DARK_RED ;;
+    *) 
+      if [[ "$message" != "" ]] ; then
+        message="$original_level $message"
+      else
+        message="$original_level"
+      fi
+      level="INFO";
+      color=$XTERM_DARK_BLUE
+      ;;
+  esac
+
+  if [[ "$level" == "INFO" ]] ; then
+    local case_insensitive_message=$(tolower "$message" | perl -pe 's/!$//')
+    if [[ "$case_insensitive_message" == "done" ]] ; then
+      color=$XTERM_DARK_GREEN
+    elif [[ "$case_insensitive_message" == "success" ]] ; then
+      color=$XTERM_DARK_GREEN
+    elif [[ "$case_insensitive_message" == "ok" ]] ; then
+      color=$XTERM_DARK_GREEN
+    elif [[ "$case_insensitive_message" == "complete" ]] ; then
+      color=$XTERM_DARK_GREEN
+    elif [[ "$case_insensitive_message" == "finished" ]] ; then
+      color=$XTERM_DARK_GREEN
+    fi
+  fi
+
+  case "$TERM" in
+    xterm*|rxvt*) ;;
+    *) color="" ;;
+  esac
+  
+  
+  local today=$(date +%Y-%m-%d)
+  local now=$(date +%H:%M:%S)
+  if [[ "$message" != "" ]] ; then
+    if [[ "$color" != "" ]] ; then
+      echo -e "\033[${color}m[${today} ${now} ${level}] ${message}\033[00m" >&2
+    else
+      echo -e "[${today} ${now} ${level}] ${message}" >&2
+    fi
+  fi
+
+  if [[ "$level" == "FATAL" ]] ; then
+    exit 1
+  fi
+}
+
+if [ $# -ge 2 ] ; then
+  log "$@"
+elif [ $# -eq 1 ] ; then
+  log info "$1"
+fi

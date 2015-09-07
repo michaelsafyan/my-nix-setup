@@ -1,0 +1,32 @@
+#! /bin/bash
+#
+# Description:
+#    Invokes Xcode on the supplied parameters (with a fallback to emacs).
+#
+# Usage:
+#    xcode [<arg0> ... <argN>]
+#
+
+function xcode() {
+    has_xcode=0
+    for xcode_path in "/Applications/Xcode.app" "/Developer/Applications/Xcode.app" ; do
+      if [ -d "$xcode_path" ] ; then
+        has_xcode=1
+      fi
+    done
+    if [ $has_xcode -eq 1 ] ; then
+      if [ $# -eq 0 ] ; then
+        open -a Xcode
+      else
+        open -a Xcode "$@"
+      fi
+    else
+      if [ $# -eq 0 ] ; then
+        emacsopen
+      else
+        emacsopen "$@"
+      fi
+    fi
+}
+
+xcode "$@"

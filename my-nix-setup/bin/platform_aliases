@@ -1,0 +1,118 @@
+#! /bin/bash
+#
+# Utility to enumerate a number of different ways that one might refer to
+# the current system or some of the current system's properties. This is
+# used to allow for platform-specific hooks into the system configuration.
+
+function tolower() {
+  local input="$1"
+  local output=$(echo "$1" | tr '[:upper:]' '[:lower:]')
+  echo "$output"
+}
+
+function os_names() {
+  local os_name=$(uname -s)
+  echo "$os_name"
+  local lower_os_name=$(tolower "$os_name")
+  if [[ "$os_name" != "$lower_os_name" ]] ; then
+    echo "$lower_os_name"
+  fi
+  case "$lower_os_name" in
+    darwin) echo "MacOSX"; echo "macosx" ;;
+  esac
+}
+
+function arch_names() {
+  local arch_name=$(uname -m)
+  echo "$arch_name"
+  local lower_arch_name=$(tolower "$arch_name")
+  if [[ "$arch_name" != "$lower_arch_name" ]] ; then
+    echo "$lower_arch_name"
+  fi
+  case "$lower_arch_name" in
+    amd64) echo "x86_64"; echo "i386" ;;
+    x86_64) echo "amd64"; echo "i386" ;;
+    sun4u) echo "sparc" ;;
+    ip30) echo "mips" ;;
+  esac
+}
+
+function version_names() {
+  local os_name="$1"
+  local lower_os_name=$(tolower "$os_name")
+  if [[ "$lower_os_name" == "macosx" ]] ; then
+    sw_vers -productVersion
+    return
+  fi
+
+  local os_ver=$(uname -r)
+  echo "$os_ver"
+  local lower_os_ver=$(tolower "$os_ver")
+  if [[ "$os_ver" != "$lower_os_ver" ]] ; then
+    echo "$lower_os_ver"
+  fi
+}
+
+function main() {
+  # OS, Arch, Ver
+  for os_name in $(os_names) ; do
+    for arch_name in $(arch_names) ; do
+      for os_ver in $(version_names "$os_name") ; do
+        echo "$os_name-$arch_name-$os_ver"
+        echo "$os_name-$os_ver-$arch_name"
+      done
+    done 
+  done
+
+  # OS, Ver
+  for os_name in $(os_names) ; do
+    for os_ver in $(version_names "$os_name") ; do
+      echo "$os_name-$os_ver"
+    done
+  done
+
+  # OS, Arch
+  for os_name in $(os_names) ; do
+    for arch_name in $(arch_names) ; do
+      echo "$os_name-$arch_name"
+    done
+  done
+
+  # OS
+  for os_name in $(os_names) ; do
+    echo "$os_name"
+  done
+
+  # Arch
+  for arch_name in $(arch_names) ; do
+    echo "$arch_name"
+  done
+  
+  # For Linux
+  if [ -x $(which lsb_release) ] ; then
+    local distro_name=$(lsb_release -is)
+    local code_name=$(lsb_release -cs)
+    local version_number=$(lsb_release -rs)
+    echo "$distro_name"
+    echo $(tolower "$distro_name")
+    echo "Linux-$distro_name"
+    echo $(tolower "Linux-$distro_name")
+
+    echo "$distro_name-$code_name"
+    echo $(tolower "$distro_name-$code_name")
+    echo "Linux-$distro_name-$code_name"
+    echo $(tolower "Linux-$distro_name-$code_name")
+
+    echo "$distro_name-$version_number"
+    echo $(tolower "$distro_name-$version_number")
+    echo "Linux-$distro_name-$version_number"
+    echo $(tolower "Linux-$distro_name-$version_number")
+    
+    echo "$distro_name-$code_name-$version_number"
+    echo $(tolower "$distro_name-$code_name-$version_number")
+    echo "Linux-$distro_name-$code_name-$version_number"
+    echo $(tolower "Linux-$distro_name-$code_name-$version_number")
+  fi
+}
+
+main "$@"

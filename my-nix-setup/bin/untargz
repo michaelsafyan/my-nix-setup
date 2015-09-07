@@ -1,0 +1,3 @@
+#! /bin/bash
+# Utility for extracting a *.tar.gz archive
+tar -xvzf "$@"

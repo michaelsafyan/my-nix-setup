@@ -1,0 +1,24 @@
+#! /bin/bash
+#
+# Description:
+#    Invokes nano on the supplied command name if it exists; otherwise, does nothing.
+#
+# Usage:
+#    nanowhich <command>
+#
+
+function nanowhich() {
+   local command="$1"
+   local command_location=$(which "$command")
+   if [ -x "$command_location" ] ; then
+     nano "$command_location"
+   else
+     log error "No such command: $command" >&2
+   fi
+}
+
+if [ $# -eq 1 ] ; then
+  nanowhich "$1"
+else
+  log fatal "Wrong number of arguments: 1 required."
+fi

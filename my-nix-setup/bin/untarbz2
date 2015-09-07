@@ -1,0 +1,4 @@
+#! /bin/bash
+# Utility for extracting a *.tar.bz2 archive
+tar -xvjf "$@"
+

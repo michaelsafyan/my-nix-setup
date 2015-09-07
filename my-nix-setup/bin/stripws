@@ -1,0 +1,13 @@
+#! /usr/bin/env python3
+#
+# Strips leading and trailing whitespace for all arguments
+
+import sys
+
+def main():
+  for arg in sys.argv[1:]:
+    print(arg.strip())
+
+if __name__=='__main__':
+    main()
+
