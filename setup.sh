@@ -1,6 +1,6 @@
 #! /bin/bash
 
-REPOSITORY_BASE_URL="https://raw.githubusercontent.com/michaelsafyan/my-nix-setup/master/"
+REPOSITORY_BASE_URL="https://raw.githubusercontent.com/michaelsafyan/my-nix-setup/master"
 
 function mynixsetup__Install() {
     mynixsetup__Log "======================================="
@@ -19,7 +19,7 @@ function mynixsetup__Install() {
     mkdir -p "$backup_folder"
     
     mynixsetup__Log "Extracting downloaded archive..."
-    (cd "$temp_directory" >/dev/null && tar -xj "my-nix-setup.tar.bz2") || mynixsetup__Fatal "Could not extract downloaded archive"
+    (cd "$temp_directory" >/dev/null && tar -xjf "my-nix-setup.tar.bz2") || mynixsetup__Fatal "Could not extract downloaded archive"
     (cd "$temp_directory" && chmod -R a+x my-nix-setup) || mynixsetup__Fatal "Could not make extracted files executable"
     mynixsetup__BackUpAndDeleteIfExists "$backup_folder" "$HOME/.my-nix-setup" "previous-my-nix-setup"
     mv "$temp_directory/my-nix-setup" "$HOME/.my-nix-setup"
