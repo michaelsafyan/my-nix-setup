@@ -24,7 +24,7 @@ function get_virtualenv_env() {
 function print_prompt_context() {
   local git_branch=$(get_git_branch)
   local virtualenv_env=$(get_virtualenv_env)
-  local result="git_branch"
+  local result="$git_branch"
 
   if [[ "$git_branch" != "" ]] ; then
     if [[ "$virtualenv_env" != "" ]] ; then
@@ -33,7 +33,9 @@ function print_prompt_context() {
       result="$git_branch"
     fi
   else
-    result="$virtualenv_env"
+    if [[ "$virtualenv_env" != "" ]] ; then
+      result="venv: $virtualenv_env"
+    fi
   fi
 
   if [[ "$result" != "" ]] ; then
