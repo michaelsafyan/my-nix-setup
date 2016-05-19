@@ -1,0 +1,44 @@
+#! /bin/bash
+
+# Source git prompt if possible.
+if [ $(type __git_ps1 >/dev/null 2>&1; echo $?) -eq 1 ] ; then
+  if [ -f "/etc/bash_completion.d/git-prompt" ] ; then
+    source "/etc/bash_completion.d/git-prompt"
+  fi
+fi
+
+function get_git_branch() {
+  type __git_ps1 >/dev/null 2>&1
+  if [ $? -eq 0 ] ; then
+    local branch=$(__git_ps1 "%s")
+    echo "$branch"
+  fi
+}
+
+function get_virtualenv_env() {
+  if [[ "$VIRTUAL_ENV" != "" ]] ; then
+    basename "$VIRTUAL_ENV"
+  fi
+}
+
+function print_prompt_context() {
+  local git_branch=$(get_git_branch)
+  local virtualenv_env=$(get_virtualenv_env)
+  local result="git_branch"
+
+  if [[ "$git_branch" != "" ]] ; then
+    if [[ "$virtualenv_env" != "" ]] ; then
+      result="git: $git_branch, venv: $virtualenv_env"
+    else
+      result="$git_branch"
+    fi
+  else
+    result="$virtualenv_env"
+  fi
+
+  if [[ "$result" != "" ]] ; then
+    echo " ($result)"
+  fi
+}
+
+print_prompt_context
