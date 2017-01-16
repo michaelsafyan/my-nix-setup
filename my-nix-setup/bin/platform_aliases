@@ -89,7 +89,8 @@ function main() {
   done
   
   # For Linux
-  if [ -x $(which lsb_release) ] ; then
+  local lsb_release_type=$(type -t lsb_release)
+  if [[ "$lsb_release_type" != "" ]] ; then
     local distro_name=$(lsb_release -is)
     local code_name=$(lsb_release -cs)
     local version_number=$(lsb_release -rs)
