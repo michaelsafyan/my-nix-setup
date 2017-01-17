@@ -2,7 +2,7 @@
 
 USER_AT_HOST='\u@\h'
 if [[ "$C9_USER" != "" ]] ; then
-  USER_AT_HOST='${C9_USER}@${C9_PROJECT}''
+  USER_AT_HOST='${C9_USER}@${C9_PROJECT}'
 elif [[ "$DEVSHELL_PROJECT_ID" != "" ]] ; then
   USER_AT_HOST='${USER}@${DEVSHELL_PROJECT_ID}'
 fi
