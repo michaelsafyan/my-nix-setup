@@ -7,7 +7,6 @@ if [[ "$DEBUG" == "" ]] ; then
   DEBUG=0
 fi
 
-
 function source_platform_directory() {
   local path="$1"
   if [ -f "$path/profile.sh" ] ; then
@@ -16,7 +15,7 @@ function source_platform_directory() {
     fi
     source "$path/profile.sh"
   fi
-  
+
   if [ -d "$path/profile.d" ] ; then
     for bashrc_script_basename in $(/bin/ls "$path/profile.d/") ; do
       if [ -f "$path/profile.d/$bashrc_script_basename" ] ; then
@@ -36,20 +35,20 @@ function init_profile() {
   fi
 
   # Determine the location into which this code has been installed.
-  if [[ "$MY_NIX_SETUP_HOME" == "" ]] ; then
-    pushd $(dirname ${BASH_SOURCE[0]}) > /dev/null
-    local this_script_dir=$(pwd -P)
-    popd > /dev/null
-    local mynix_root_dir=$(dirname "$this_script_dir")
-    export MY_NIX_SETUP_HOME=$(cd -P "$mynix_root_dir" > /dev/null && pwd -P)
-  fi
-  local mynix_setup_dir_abspath="$MY_NIX_SETUP_HOME"
-  
+  pushd $(dirname ${BASH_SOURCE[0]}) > /dev/null
+  local this_script_dir=$(pwd -P)
+  popd > /dev/null
+  local mynix_root_dir=$(dirname "$this_script_dir")
+  export MY_NIX_SETUP_HOME=$(cd -P "$mynix_root_dir" > /dev/null && pwd -P)
+  local mynix_setup_dir_abspath="$MY_NIX_SETUP_HOME" 
+
+  # Add my-nix-setup bin directory
+  export PATH="$PATH:$mynix_setup_dir_abspath/bin"
+
   # If there is a *.bashrc file to source, make sure to source that.
   if [ -f "$mynix_setup_dir_abspath/etc/bashrc.sh" ] ; then
     source "$mynix_setup_dir_abspath/etc/bashrc.sh"
   fi
-
 
   # Add my-nix-setup profile.d files
   if [ -d "$mynix_setup_dir_abspath/etc/profile.d" ] ; then
@@ -74,7 +73,7 @@ function init_profile() {
       fi
     fi
   done
-  
+
   # Add .local profile.d and bin files
   if [ -d "$HOME/.local" ] ; then
     if [ -f "$HOME/.local/etc/profile.sh" ] ; then
@@ -95,7 +94,7 @@ function init_profile() {
       done
     fi
   fi
-  
+
   # Add platform-specific aliases for .local/platform/
   if [ -d "$HOME/.local/platform" ] ; then
     for platform in $platforms ; do
@@ -106,7 +105,7 @@ function init_profile() {
       fi
     done
   fi
-  
+
   if [ $DEBUG -eq 1 ] ; then
     local end_time=$(date +%s)
     local total_time=$(expr "$end_time" - "$start_time")

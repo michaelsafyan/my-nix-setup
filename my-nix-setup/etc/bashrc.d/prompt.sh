@@ -7,7 +7,16 @@ elif [[ "$DEVSHELL_PROJECT_ID" != "" ]] ; then
   USER_AT_HOST='${USER}@${DEVSHELL_PROJECT_ID}'
 fi
 
-CONTEXT_COMPLETION='$(prompt_context)'
+function __prompt_context() {
+  local cmd=$(which prompt_context)
+  if [ -x "$cmd" ] ; then
+    "$cmd"
+  else
+    echo ""
+  fi
+}
+
+CONTEXT_COMPLETION='$(__prompt_context)'
 XTERM_RED='01;31'
 XTERM_GREEN='01;32'
 BASIC_COLOR=$XTERM_GREEN

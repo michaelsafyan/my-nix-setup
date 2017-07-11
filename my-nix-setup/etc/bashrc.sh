@@ -15,7 +15,7 @@ function source_platform_directory() {
     fi
     source "$path/bashrc.sh"
   fi
-  
+
   if [ -d "$path/bashrc.d" ] ; then
     for bashrc_script_basename in $(/bin/ls "$path/bashrc.d/") ; do
       if [ -f "$path/bashrc.d/$bashrc_script_basename" ] ; then
@@ -35,15 +35,15 @@ function init_bashrc() {
   fi
 
   # Determine the location into which this code has been installed.
-  if [[ "$MY_NIX_SETUP_HOME" == "" ]] ; then
-    pushd $(dirname ${BASH_SOURCE[0]}) > /dev/null
-    local this_script_dir=$(pwd -P)
-    popd > /dev/null
-    local mynix_root_dir=$(dirname "$this_script_dir")
-    export MY_NIX_SETUP_HOME=$(cd -P "$mynix_root_dir" > /dev/null && pwd -P)
-  fi
+  pushd $(dirname ${BASH_SOURCE[0]}) > /dev/null
+  local this_script_dir=$(pwd -P)
+  popd > /dev/null
+  local mynix_root_dir=$(dirname "$this_script_dir")
+  export MY_NIX_SETUP_HOME=$(cd -P "$mynix_root_dir" > /dev/null && pwd -P)
   local mynix_setup_dir_abspath="$MY_NIX_SETUP_HOME"
-  export PATH="$MY_NIX_SETUP_HOME/bin:$PATH"
+  
+  # Add my-nix-setup bin directory
+  export PATH="$PATH:$mynix_setup_dir_abspath/bin"
 
   # Add my-nix-setup bashrc.d files
   if [ -d "$mynix_setup_dir_abspath/etc/bashrc.d" ] ; then
@@ -71,7 +71,7 @@ function init_bashrc() {
       fi
     fi
   done
-  
+
   # Add .local bashrc.d and bin files
   if [ -d "$HOME/.local" ] ; then
     if [ -d "$HOME/.local/bin" ] ; then
@@ -95,7 +95,7 @@ function init_bashrc() {
       done
     fi
   fi
-  
+
   # Add platform-specific aliases for .local/platform/
   if [ -d "$HOME/.local/platform" ] ; then
     for platform in $platforms ; do
@@ -109,7 +109,7 @@ function init_bashrc() {
       fi
     done
   fi
-  
+
   if [ $DEBUG -eq 1 ] ; then
     local end_time=$(date +%s)
     local total_time=$(expr "$end_time" - "$start_time")
